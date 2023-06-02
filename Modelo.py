@@ -4,7 +4,7 @@ import os
 import numpy as np
 from pymongo import MongoClient
 
-# Todas las funciones necesarias para contener y manipular la información necesaria para el programa.
+# Todas las funciones necesarias para contener y manipular la información necesaria para el programa. 
 class Image_processing:
     def __init__(self):
         pass
@@ -322,6 +322,5 @@ class Image_processing:
         
 
 
-# TODO: Función para guardar los dicoms y pngs / jpgs.
-# TODO: La mierda de pymongo.
-# TODO: Recordar que TODAS las funciones de matplotlib deben ir en la vista, el modelo solo regresa información.
+
+
