@@ -15,7 +15,7 @@ class Controller(object):
 
 def main():
     app = QApplication(sys.argv)
-    mi_vista = Vista.MainWindow()
+    mi_vista = Vista.MainMenu()
     mi_modelo = Modelo.Image_processing()
     mi_controlador = Controller(mi_vista, mi_modelo)
     mi_vista.set_controller(mi_controlador)

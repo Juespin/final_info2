@@ -117,6 +117,11 @@ class Image_processing:
             # plt.imshow(image)
             # j+=1
             # i+=1 
+            processed_images.append({
+                "name": image["name"],
+                "file": image["file"],
+                "image": image["image"]
+            })
 
             # plt.subplot(self.__number_of_images, 3, i)
             # plt.axis("off")
