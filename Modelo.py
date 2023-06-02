@@ -31,7 +31,7 @@ class Image_processing:
                 # i += 1
                 images.append({"name": path, "file": file, "image": image})
 
-            elif file == None:    
+            elif type(image) != None:    
                 images.append({"name": path, "file": file, "image": image})
             
             else:
@@ -125,13 +125,13 @@ class Image_processing:
             # i+=1 
 
             if image["file"] != None:
-                self.dicom_save_image(image["file"], self.close_open(image, kernel))
+                self.dicom_save_image(image["file"], self.close_open(image["image"], kernel))
 
-            processed_images = {
+            processed_images.append({
                 "name": "close_open_" + image["name"],
                 "file": image["file"],
-                "image": self.close_open(image, kernel)
-            }
+                "image": self.close_open(image["image"], kernel)
+            })
 
             # plt.subplot(self.__number_of_images, 3, i)
             # plt.axis("off")
@@ -140,12 +140,12 @@ class Image_processing:
             # i+=1
             
             if image["file"] != None:
-                self.dicom_save_image(image["file"], self.open_close(image, kernel))
+                self.dicom_save_image(image["file"], self.open_close(image["image"], kernel))
 
             processed_images.append({
                 "name": "open_close_" + image["name"],
                 "file": image["file"],
-                "image": self.open_close(image, kernel)
+                "image": self.open_close(image["image"], kernel)
             })
 
         # plt.tight_layout()
@@ -320,7 +320,4 @@ class Image_processing:
 
         collection_1.insert_many(to_save_data)
         
-
-
-
-
+#TODO: revisar anonimizado.
