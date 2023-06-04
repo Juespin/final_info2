@@ -58,7 +58,13 @@ class Image_processing:
             return image, file
         
         elif url.endswith(".jpg") or url.endswith(".png"):
-            image = cv2.cvtColor(cv2.imread(url), cv2.COLOR_BGR2RGB)
+            # cv2 no lee caracteres especiales como tildes o ñ, toca hacer esto:
+            with open(u""+url, 'rb') as f:
+                bytes = bytearray(f.read())
+            
+            array = np.asarray(bytes, dtype=np.uint8)
+            bgr_image = cv2.imdecode(array, cv2.IMREAD_UNCHANGED)
+            image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
 
             return image, None
         
@@ -346,24 +352,24 @@ class Image_processing:
                 for attribute in dir(image["file"]):
                     metadata[attribute] = str(getattr(image["file"], attribute))
 
-                if experiment == None:
-                    to_save_data_1.append({
-                        "Nombre": image["name"],
-                        "Metadata": metadata,
-                        "Imagen": str(image["image"])
-                    })
-                
-                else:
-                    img = image["image"]
-                    to_save_data_2.append({
-                        "Archivo": image["name"],
-                        "Nombre del experimento": experiment,
-                        "Tamaño de la imagen": img.size,
-                        "Media": np.mean(img),
-                        "Mediana": np.median(img),
-                        "Moda": int(stats.mode(img.flatten(), keepdims=False).mode),
-                        "Desviación estandar": np.std(img),
-                    })
+            if experiment == None:
+                to_save_data_1.append({
+                    "Nombre": image["name"],
+                    "Metadata": metadata,
+                    "Imagen": str(image["image"])
+                })
+            
+            else:
+                img = image["image"]
+                to_save_data_2.append({
+                    "Archivo": image["name"],
+                    "Nombre del experimento": experiment,
+                    "Tamaño de la imagen": img.size,
+                    "Media": np.mean(img),
+                    "Mediana": np.median(img),
+                    "Moda": int(stats.mode(img.flatten(), keepdims=False).mode),
+                    "Desviación estandar": np.std(img),
+                })
 
         if len(to_save_data_1) != 0:
             collection_1.insert_many(to_save_data_1)

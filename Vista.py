@@ -119,7 +119,11 @@ class OpenClosevsCloseOpenWindow(QMainWindow):
                 file.save_as(folder + "/" + self.__names[i])
             
             else:
-                cv2.imwrite(folder + "/" + self.__names[i])
+                save_path = folder + "/" + self.__names[i]
+                # cv2 no reconoce caracteres especiales, toca hacer esto:
+                is_success, array = cv2.imencode(".jpg", self.__images[i])
+                array.tofile(save_path)
+
             i+=1
         
         QMessageBox.information(self, "¡Exito! 😀", f"Imágenes almacenadas correctamente en {folder}.")
@@ -180,7 +184,11 @@ class CutResizedWindow(QMainWindow):
                 file.save_as(folder + "/" + self.__names[i])
             
             else:
-                cv2.imwrite(folder + "/" + self.__names[i])
+                save_path = folder + "/" + self.__names[i]
+                # cv2 no reconoce caracteres especiales, toca hacer esto:
+                is_success, array = cv2.imencode(".jpg", self.__images[i])
+                array.tofile(save_path)
+
             i+=1
         
         QMessageBox.information(self, "¡Exito! 😀", f"Imágenes almacenadas correctamente en {folder}.")
@@ -252,7 +260,11 @@ class SoftenerWindow(QMainWindow):
                 file.save_as(folder + "/" + self.__names[i])
             
             else:
-                cv2.imwrite(folder + "/" + self.__names[i])
+                save_path = folder + "/" + self.__names[i]
+                # cv2 no reconoce caracteres especiales, toca hacer esto:
+                is_success, array = cv2.imencode(".jpg", self.__images[i])
+                array.tofile(save_path)
+
             i+=1
         
         QMessageBox.information(self, "¡Exito! 😀", f"Imágenes almacenadas correctamente en {folder}.")
