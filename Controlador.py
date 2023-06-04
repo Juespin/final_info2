@@ -4,15 +4,30 @@ import Modelo
 import sys
 from PyQt5.QtWidgets import QApplication
 
-class Controller(object):
+class Controller(object):   
     def __init__(self, vista, model):
         self.__my_vista = vista
         self.__my_model = model
 
-    def get_opcl_vs_clop_imgs(self, kernel, image, anonymize):
-        data = self.__my_model.close_open_vs_open_close(kernel, image, anonymize)
+    def get_imgs(self, images, anonymize=False):
+        data = self.__my_model.load_folder(images, anonymize)
         return data
 
+    def get_opcl_vs_clop_imgs(self, kernel, images, anonymize):
+        data = self.__my_model.close_open_vs_open_close(kernel, images, anonymize)
+        return data
+
+    def get_cutresized_imgs(self, images, x, y, anonymize):
+        data = self.__my_model.cut_and_resized(images, x, y, anonymize)
+        return data
+    
+    def get_softened_imgs(self, images, anonymize):
+        data = self.__my_model.suavizado(images, anonymize)
+        return data
+
+    def atlas_save(self, images, anonymize):
+        self.__my_model.pymongo_save(images, anonymize)
+    
 def main():
     app = QApplication(sys.argv)
     mi_vista = Vista.MainMenu()

@@ -3,12 +3,13 @@ import cv2
 import os 
 import numpy as np
 from pymongo import MongoClient
+from scipy import stats
 
 # Todas las funciones necesarias para contener y manipular la información necesaria para el programa. 
 class Image_processing:
     def __init__(self):
         pass
-
+        
     def load_folder(self, url:str, anonymize=False):
         """ 
         Función que permite cargar todos los archivos de image en una carpeta, y retornarlos 
@@ -21,17 +22,17 @@ class Image_processing:
         """
         
         images = []
-        i = 1
+        #i = 1
         for path in os.listdir(url):
-            image, file = self.load_file(url + "/" + path)
-            if file != None and anonymize:
-                # if not os.path.exists("./Anonimizadas"):
-                #     os.makedirs("./Anonimizadas")
-                # file.save_as("./Anonimizadas/" + f"anon{str(i).zfill(2)}.dcm")
-                # i += 1
-                images.append({"name": path, "file": file, "image": image})
+            image, file = self.load_file(url + "/" + path, anonymize)
+            # if file != None and anonymize:
+            #     # if not os.path.exists("./Anonimizadas"):
+            #     #     os.makedirs("./Anonimizadas")
+            #     # file.save_as("./Anonimizadas/" + f"anon{str(i).zfill(2)}.dcm")
+            #     # i += 1
+            #     images.append({"name": path, "file": file, "image": image})
 
-            elif type(image) != None:    
+            if type(image) != None:    
                 images.append({"name": path, "file": file, "image": image})
             
             else:
@@ -163,7 +164,6 @@ class Image_processing:
 
     def cut_and_resized(self, images_url:str, x, y, anonymize=None):
         images = self.load_folder(images_url, anonymize)
-        resized = "./Modificaciones/redimensionado/"
 
         processed_images = []
         
@@ -176,9 +176,14 @@ class Image_processing:
             if type(image["image"]) == pydicom.dataset.FileDataset:
                 image["image"] = self.dicom_extract_image(image["image"])
             
+            processed_images.append({
+                "name": image["name"],
+                "file": image["file"],
+                "image": image["image"]
+            })
 
-            cut_image = self.cut(image, x, y)
-            resized_image = self.resize(cut_image.shape[0]*2, cut_image.shape[1]*2)
+            cut_image = image["image"][-x:,-y:]
+            resized_image = cv2.resize(cut_image, (cut_image.shape[0]*2, cut_image.shape[1]*2))
             # cv2.imwrite(f"{resized}resized{str(j).zfill(2)}.jpg", resized_image)
             # j += 1
 
@@ -208,7 +213,7 @@ class Image_processing:
                 self.dicom_save_image(image["file"], resized_image)
 
             processed_images.append({
-                "name": "cut_resized_" + image["name"],
+                "name": "resized_" + image["name"],
                 "file": image["file"],
                 "image": resized_image
             })
@@ -228,12 +233,7 @@ class Image_processing:
     def suavizado(self, images_url:str, anonymize=False):
         images = self.load_folder(images_url, anonymize)
         processed_images = []
-        
-        if not os.path.exists("./Modificaciones/softened"):
-            os.makedirs("./Modificaciones/softened")
-            
-        softened ="./Modificaciones/softened/"
-        
+               
         # plt.figure(figsize=(10,200))
         # i = 1
         # j = 1
@@ -247,8 +247,14 @@ class Image_processing:
             # plt.title(f"Imagen {str(j).zfill(2)}")
             # plt.imshow(image, cmap="inferno")
             # i += 1
+            processed_images.append({
+                "name": image["name"],
+                "file": image["file"],
+                "image": image["image"]
+            })
+
             
-            img_3X3 = self.media(image, self.kernel(3,3))
+            img_3X3 = self.media(image["image"], self.kernel(3,3))
             # plt.subplot(self.__number_of_images, 4, i)
             # plt.axis("off")
             # plt.title(f"Suavizado con kernel 3x3")
@@ -260,11 +266,11 @@ class Image_processing:
 
             processed_images.append({
                 "name": "3x3_" + image["name"],
-                "image": image["file"],
+                "file": image["file"],
                 "image": img_3X3
             })
 
-            img_5X5 = self.media(image, self.kernel(5,5))
+            img_5X5 = self.media(image["image"], self.kernel(5,5))
             # plt.subplot(self.__number_of_images, 4, i)
             # plt.axis("off")
             # plt.title("Suavizado con kernel 5x5")
@@ -280,7 +286,7 @@ class Image_processing:
                 "image": img_5X5
             })
             
-            img_7X7= self.media(image, self.kernel(7,7))
+            img_7X7= self.media(image["image"], self.kernel(7,7))
             # plt.subplot(self.__number_of_images, 4, i)
             # plt.axis("off")
             # plt.title("Suavizado con kernel 7x7")
@@ -300,8 +306,8 @@ class Image_processing:
         # plt.show()
         return processed_images
     
-    def pymongo_save(self, images_url):
-        images = self.load_folder(images_url)
+    def pymongo_save(self, images_url, anonymize=False):
+        images = self.load_folder(images_url, anonymize)
 
         username = "seguimiento3"
         password = "mOtHxcAnhBMSNoLN"
@@ -309,20 +315,63 @@ class Image_processing:
         client = MongoClient(cluster_uri)
         data_base = client["DICOM_data"]
         collection_1 = data_base["All_Data"]
-        to_save_data = []
+        collection_2 = data_base["Experiments_Data"]
+
+        to_save_data_1 = []
+        to_save_data_2 = []
 
         for image in images:
+
+            if image["name"].startswith("3X3") or image["name"].startswith("5X5") or image["name"].startswith("7X7"):
+                experiment = "Suavizado"
+            
+            elif image["name"].startswith("close_open"):
+                experiment = "Apertura y cierre"
+            
+            elif image["name"].startswith("open_close"):
+                experiment = "Cierre y apertura"
+
+            elif image["name"].startswith("cut"):
+                experiment = "Recorte"
+            
+            elif image["name"].startswith("resized"):
+                experiment = "Recorte y Ampliado"
+            
+            else:
+                experiment = None
+            
             metadata = {}
             if image["file"] != None:
+
                 for attribute in dir(image["file"]):
                     metadata[attribute] = str(getattr(image["file"], attribute))
 
-                to_save_data.append({
-                    "Nombre": image["name"],
-                    "Metadata": metadata,
-                    "Imagen": image["imagen"]
-                })
+                if experiment == None:
+                    to_save_data_1.append({
+                        "Nombre": image["name"],
+                        "Metadata": metadata,
+                        "Imagen": str(image["image"])
+                    })
+                
+                else:
+                    img = image["image"]
+                    to_save_data_2.append({
+                        "Archivo": image["name"],
+                        "Nombre del experimento": experiment,
+                        "Tamaño de la imagen": img.size,
+                        "Media": np.mean(img),
+                        "Mediana": np.median(img),
+                        "Moda": int(stats.mode(img.flatten(), keepdims=False).mode),
+                        "Desviación estandar": np.std(img),
+                    })
 
-        collection_1.insert_many(to_save_data)
+        if len(to_save_data_1) != 0:
+            collection_1.insert_many(to_save_data_1)
+
+        if len(to_save_data_2) != 0:
+            collection_2.insert_many(to_save_data_2)
+
         
+
+
 #TODO: revisar anonimizado.

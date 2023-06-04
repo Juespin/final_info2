@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>618</width>
-    <height>455</height>
+    <width>783</width>
+    <height>128</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Procesamient de imágenes</string>
+   <string>Guardado en base de datos</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -27,7 +27,7 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item row="0" column="0">
+    <item>
      <widget class="QFrame" name="frame">
       <property name="styleSheet">
        <string notr="true">background-color: rgb(140, 232, 245);</string>
@@ -38,20 +38,18 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,5">
-       <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0" alignment="Qt::AlignHCenter">
         <widget class="QLabel" name="label">
          <property name="styleSheet">
-          <string notr="true">font: 75 italic 16pt &quot;Consolas&quot;;
-color: rgb(0, 0, 0);
-</string>
+          <string notr="true">font: 75 italic 16pt &quot;Consolas&quot;;</string>
          </property>
          <property name="text">
-          <string>Procesamiento de imágenes</string>
+          <string>Guardado en base de datos</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="1" column="0">
         <widget class="QFrame" name="frame_2">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(115, 181, 222);</string>
@@ -62,67 +60,32 @@ color: rgb(0, 0, 0);
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QPushButton" name="openclose_button">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="save_button">
             <property name="styleSheet">
              <string notr="true">
 background-color: rgb(130, 250, 198);</string>
             </property>
             <property name="text">
-             <string>Apertura - Cierre vs Cierre - Apertura</string>
+             <string>Seleccionar carpeta</string>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="cutresized_button">
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(130, 250, 198);</string>
-            </property>
-            <property name="text">
-             <string>Corte y Escalado</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="softener_button">
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(130, 250, 198);</string>
-            </property>
-            <property name="text">
-             <string>Suavizado</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="database_button">
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(130, 250, 198);</string>
-            </property>
-            <property name="text">
-             <string>Almacenamiento en base de datos MongoDB</string>
-            </property>
-           </widget>
-          </item>
-          <item>
+          <item row="0" column="1">
            <widget class="QPushButton" name="return_button">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(130, 250, 198);</string>
             </property>
             <property name="text">
              <string>Regresar</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="anonimizar">
+            <property name="text">
+             <string>Anonimizar</string>
             </property>
            </widget>
           </item>
