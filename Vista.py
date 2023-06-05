@@ -28,7 +28,32 @@ class MyGraphCanvas(FigureCanvas):
 
         self.axes.figure.tight_layout()
         self.axes.figure.canvas.draw()
-            
+
+class LoginWindow(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        loadUi("ingreso.ui", self)
+        self.setup()
+
+    def setup(self):
+        self.login_button.clicked.connect(self.login)
+        self.create_button.clicked.connect(self.create)
+    
+    def create(self):
+        info = self.__my_controller.save_user(self.username_input.text(), self.password_input.text())
+        QMessageBox.information(self, "Información", info)
+
+    def login(self):
+        if self.__my_controller.login(self.username_input.text(), self.password_input.text()):
+            mainMenu_window = MainMenu(self)
+            mainMenu_window.set_controller(self.__my_controller)
+            self.hide()
+            mainMenu_window.show()
+
+    
+    def set_controller(self, controller):
+        self.__my_controller = controller
+
 class MainMenu(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)

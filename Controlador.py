@@ -8,6 +8,12 @@ class Controller(object):
     def __init__(self, vista, model):
         self.__my_vista = vista
         self.__my_model = model
+    
+    def save_user(self, user, password):
+        return self.__my_model.crear_usuario(user, password)
+
+    def login(self, user, password):
+        return self.__my_model.validar_credenciales(user, password)
 
     def get_imgs(self, images, anonymize=False):
         data = self.__my_model.load_folder(images, anonymize)
@@ -30,7 +36,7 @@ class Controller(object):
     
 def main():
     app = QApplication(sys.argv)
-    mi_vista = Vista.MainMenu()
+    mi_vista = Vista.LoginWindow()
     mi_modelo = Modelo.Image_processing()
     mi_controlador = Controller(mi_vista, mi_modelo)
     mi_vista.set_controller(mi_controlador)

@@ -4,11 +4,34 @@ import os
 import numpy as np
 from pymongo import MongoClient
 from scipy import stats
+import json
 
 # Todas las funciones necesarias para contener y manipular la información necesaria para el programa. 
+
 class Image_processing:
     def __init__(self):
         pass
+
+    def crear_usuario(self, usuario, contraseña):
+        try:
+            with open("usuarios.json", "r") as archivo:
+                usuarios = json.load(archivo)
+        except FileNotFoundError:
+            usuarios = {}
+
+        usuarios[usuario] = contraseña
+
+        with open("usuarios.json", "w") as archivo:
+            json.dump(usuarios, archivo)
+
+        return "Usuario {} creado exitosamente.".format(usuario)
+
+    def validar_credenciales(self, usuario, contraseña):
+        with open("usuarios.json", "r") as archivo:
+            usuarios = json.load(archivo)
+            if usuario in usuarios and usuarios[usuario] == contraseña:
+                return True
+        return False
         
     def load_folder(self, url:str, anonymize=False):
         """ 
@@ -378,6 +401,3 @@ class Image_processing:
             collection_2.insert_many(to_save_data_2)
 
         
-
-
-#TODO: revisar anonimizado.
